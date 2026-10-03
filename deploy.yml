@@ -3,9 +3,13 @@ name: Deploy Website to GitHub Pages
 on:
   push:
     branches: ["main"]
+  schedule:
+    # Führt den Bot automatisch alle 15 Minuten aus, um die Live-Daten aktuell zu halten
+    - cron: "*/15 * * * *"
+  workflow_dispatch: # Erlaubt das manuelle Starten über GitHub Actions UI
 
 permissions:
-  contents: read
+  contents: write # Benötigt, falls der Bot Commits/Push auf stats.json ausführt
   pages: write
   id-token: write
 
@@ -32,6 +36,16 @@ jobs:
       - name: Dependencies installieren
         run: npm ci
 
+      # 1. BOT AUSFÜHREN: Aktualisiert die stats.json mit Server- & Owner-Daten
+      - name: Live Stats & Owner abrufen
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          GUILD_ID: ${{ secrets.GUILD_ID }}
+          GH_PAT_TOKEN: ${{ secrets.GH_PAT_TOKEN }}
+          GH_REPO_OWNER_AND_NAME: ${{ github.repository }}
+        run: node index.js # Führt das Skript einmalig aus (siehe Hinweis unten)
+
+      # 2. PROJEKT BAUEN: Erstellt die Website inklusive der frischen stats.json
       - name: Projekt bauen
         run: npm run build
 
