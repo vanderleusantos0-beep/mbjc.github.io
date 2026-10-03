@@ -6,6 +6,15 @@
   "status": "online",
   "owners": [
     {
+      "id": "1332297769473413140",
+      "username": "mattex_17049",
+      "displayName": "[\u03c7\ud835\udcaf]  Matti",
+      "avatar": "https://cdn.discordapp.com/avatars/1332297769473413140/45adab33946cd63c4807217100dc79ea.png?size=1024",
+      "status": "online",
+      "activity": "Roblox with Medal",
+      "role": "Co-Owner"
+    },
+    {
       "id": "1281895040322633799",
       "username": "ben_js512",
       "displayName": "[\u03c7\ud835\udcaf] \u0432\ud835\udfe5\u03b7",
@@ -15,5 +24,5 @@
       "role": "Server Owner"
     }
   ],
-  "updatedAt": "2026-10-03T10:39:35.625861+00:00"
+  "updatedAt": "2026-10-03T10:41:03.098068+00:00"
 }
