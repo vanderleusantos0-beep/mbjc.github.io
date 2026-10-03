@@ -3,28 +3,60 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Discord Server Community</title>
-  <!-- Tailwind CSS & FontAwesome Icons -->
+  <title>MBJC Community | Offizielle Webseite</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
-    body { background-color: #0b0f19; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
-    .glass-card { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
-    .glow-effect { box-shadow: 0 0 25px rgba(99, 102, 241, 0.25); }
+    body {
+      background: radial-gradient(circle at 50% -20%, #1e1b4b, #090d16 60%, #030712);
+      color: #f8fafc;
+      font-family: system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .liquid-glass {
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    }
+    .liquid-card {
+      background: rgba(30, 41, 59, 0.4);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .liquid-card:hover {
+      border-color: rgba(99, 102, 241, 0.4);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(99, 102, 241, 0.15);
+    }
+    .glow-bg {
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
   </style>
 </head>
-<body>
-  <div id="root"></div>
+<body class="relative flex flex-col items-center justify-between p-4 md:p-10">
+
+  <div class="glow-bg top-0 left-1/2 -translate-x-1/2"></div>
+
+  <div id="root" class="w-full max-w-5xl z-10"></div>
 
   <script type="text/babel">
-    const KONFIGURATION = {
-      serverName: "Nexus Community",
-      tagline: "Deine ultimative Community für Gaming & Development",
-      description: "Tritt unserem Discord bei! Finde Squad-Mitglieder, tausche dich aus und nimm an unseren Events teil.",
-      inviteUrl: "https://discord.gg/dein-code",
+    const CONFIG = {
+      serverName: "MBJC Community",
+      tagline: "Deine Heimat für Gaming, Development & Network",
+      inviteUrl: "https://discord.gg/2Nuwdyr4tZ",
+      websiteUrl: "http://mbjc.info/",
       logoUrl: "https://cdn.discordapp.com/embed/avatars/0.png"
     };
 
@@ -42,114 +74,122 @@
 
       const getStatusBadge = (status) => {
         switch(status) {
-          case 'online': return { color: 'bg-emerald-500', text: 'Online' };
-          case 'idle': return { color: 'bg-amber-500', text: 'Abwesend' };
-          case 'dnd': return { color: 'bg-rose-500', text: 'Bitte nicht stören' };
-          default: return { color: 'bg-slate-500', text: 'Offline' };
+          case 'online': return { color: 'bg-emerald-500 shadow-emerald-500/50', text: 'Online' };
+          case 'idle': return { color: 'bg-amber-500 shadow-amber-500/50', text: 'Abwesend' };
+          case 'dnd': return { color: 'bg-rose-500 shadow-rose-500/50', text: 'Bitte nicht stören' };
+          default: return { color: 'bg-slate-500 shadow-slate-500/50', text: 'Offline' };
         }
       };
 
       return (
-        <div className="min-h-screen bg-[#0b0f19] text-white flex flex-col items-center p-4 md:p-10 relative">
+        <div className="w-full flex flex-col items-center">
           
-          {/* SICHERHEITS- & ZERTIFIKAT-BILDSCHIRM (MODAL) */}
+          {/* LIQUID GLASS SAFETY MODAL */}
           {showNotice && (
-            <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-              <div className="glass-card max-w-lg w-full p-8 rounded-3xl border border-amber-500/30 text-center shadow-2xl relative">
-                <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/40 flex items-center justify-center mx-auto mb-5 text-amber-400 text-3xl">
+            <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
+              <div className="liquid-glass max-w-lg w-full p-8 rounded-3xl text-center relative border border-indigo-500/30">
+                <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center mx-auto mb-5 text-indigo-400 text-3xl shadow-lg">
                   <i className="fa-solid fa-shield-halved"></i>
                 </div>
-                <h2 className="text-2xl font-black mb-3">Sicherheit & Zertifikat</h2>
-                <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 text-left text-sm text-slate-300 space-y-2 mb-6">
+                <h2 className="text-2xl font-black mb-2 text-white">Sicherheits- & Webhinweis</h2>
+                <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 text-left text-sm text-slate-300 space-y-2 mb-6">
                   <p className="flex items-center gap-2 text-emerald-400 font-semibold">
                     <i className="fa-solid fa-lock"></i> Alle deine Daten sind geschützt und sicher.
                   </p>
                   <p className="text-slate-400 text-xs leading-relaxed">
-                    Falls dein Browser die Webseite aktuell als <span className="text-amber-400">„Nicht sicher“</span> einstuft: 
-                    Das SSL-Sicherheitszertifikat wird aktuell verifiziert und von unserer Domain ausgestellt. 
-                    Der Schutz deiner Privatsphäre ist zu jeder Zeit gewährleistet!
+                    Unsere Adresse <span className="text-indigo-400 font-mono">mbjc.info</span> befindet sich aktuell in der SSL-Zertifikatsausstellung. Sollte dein Browser kurzzeitig „Nicht sicher“ anzeigen, beeinträchtigt dies nicht die Sicherheit der angezeigten Inhalte.
                   </p>
                 </div>
                 <button 
                   onClick={() => setShowNotice(false)}
-                  className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 px-6 rounded-xl transition duration-200 shadow-lg shadow-indigo-600/30"
+                  className="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold py-3.5 px-6 rounded-xl transition duration-200 shadow-lg shadow-indigo-600/30 active:scale-95"
                 >
-                  <i className="fa-solid fa-check mr-2"></i> Verstanden & Fortfahren
+                  <i className="fa-solid fa-check mr-2"></i> Verstanden & Einverstanden
                 </button>
               </div>
             </div>
           )}
 
-          {/* MAIN PAGE */}
-          <div className="max-w-4xl w-full glass-card rounded-3xl p-8 md:p-12 shadow-2xl text-center glow-effect mb-12">
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold mb-6">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              Offizielle Discord Community
-            </span>
+          {/* MAIN CONTAINER */}
+          <div className="liquid-glass rounded-3xl p-8 md:p-12 text-center w-full mb-10 relative overflow-hidden">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold mb-6">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              Willkommen auf MBJC
+            </div>
 
-            <img src={KONFIGURATION.logoUrl} alt="Logo" className="w-28 h-28 rounded-2xl mx-auto mb-6 border-2 border-indigo-500/50 shadow-xl object-cover" />
+            <img src={CONFIG.logoUrl} alt="MBJC Logo" className="w-28 h-28 rounded-3xl mx-auto mb-6 border border-white/10 shadow-2xl object-cover" />
             
-            <h1 className="text-4xl md:text-5xl font-black text-white mb-3">{KONFIGURATION.serverName}</h1>
-            <p className="text-indigo-400 font-medium text-lg mb-4">{KONFIGURATION.tagline}</p>
-            <p className="text-slate-300 mb-8 max-w-2xl mx-auto leading-relaxed">{KONFIGURATION.description}</p>
+            <h1 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-indigo-300 mb-3 tracking-tight">
+              {CONFIG.serverName}
+            </h1>
+            <p className="text-slate-400 font-medium text-base md:text-lg mb-8 max-w-xl mx-auto">{CONFIG.tagline}</p>
 
-            <a href={KONFIGURATION.inviteUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 px-10 rounded-2xl transition duration-200 shadow-lg shadow-indigo-600/40">
+            <a href={CONFIG.inviteUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-3 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-bold py-4 px-10 rounded-2xl transition duration-300 shadow-xl shadow-indigo-600/25 active:scale-95">
               <i className="fa-brands fa-discord text-2xl"></i>
-              <span>Jetzt Discord Beitreten</span>
+              <span>Discord Server Beitreten</span>
             </a>
 
+            {/* LIVE STATS */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-12">
-              <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl text-left">
-                <p className="text-xs text-slate-400 uppercase font-semibold">Mitglieder</p>
+              <div className="liquid-card p-5 rounded-2xl text-left">
+                <p className="text-xs text-slate-400 uppercase font-semibold tracking-wider">Mitglieder</p>
                 <p className="text-3xl font-extrabold text-white mt-1">{loading ? "..." : (stats.members || 0)}</p>
               </div>
-              <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl text-left">
-                <p className="text-xs text-slate-400 uppercase font-semibold">Online Jetzt</p>
+              <div className="liquid-card p-5 rounded-2xl text-left">
+                <p className="text-xs text-slate-400 uppercase font-semibold tracking-wider">Online Jetzt</p>
                 <p className="text-3xl font-extrabold text-emerald-400 mt-1">{loading ? "..." : (stats.online || 0)}</p>
               </div>
-              <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl text-left">
-                <p className="text-xs text-slate-400 uppercase font-semibold">Bots</p>
-                <p className="text-3xl font-extrabold text-indigo-400 mt-1">{loading ? "..." : (stats.bots || 0)}</p>
+              <div className="liquid-card p-5 rounded-2xl text-left">
+                <p className="text-xs text-slate-400 uppercase font-semibold tracking-wider">Bots</p>
+                <p className="text-3xl font-extrabold text-cyan-400 mt-1">{loading ? "..." : (stats.bots || 0)}</p>
               </div>
             </div>
           </div>
 
-          {/* OWNERS */}
-          <div className="max-w-4xl w-full mb-16">
-            <h2 className="text-2xl font-bold flex items-center justify-center gap-2 mb-6">
-              <i className="fa-solid font-bold text-amber-400 fa-crown"></i>
+          {/* OWNERS SECTION */}
+          <div className="w-full mb-12">
+            <h2 className="text-2xl font-bold flex items-center gap-3 mb-6 text-slate-200">
+              <i className="fa-solid fa-crown text-amber-400"></i>
               <span>Server Leitung & Owners</span>
             </h2>
 
-            {stats.owners && stats.owners.length > 0 && (
+            {stats.owners && stats.owners.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {stats.owners.map((owner, index) => {
                   const statusInfo = getStatusBadge(owner.status);
                   return (
-                    <div key={owner.id || index} className="glass-card rounded-2xl p-6 relative flex flex-col justify-between">
+                    <div key={owner.id || index} className="liquid-glass rounded-2xl p-6 relative flex flex-col justify-between">
                       <div className="flex items-start justify-between gap-4 mb-4">
                         <div className="relative">
-                          <img src={owner.avatar} alt={owner.displayName} className="w-16 h-16 rounded-2xl object-cover border-2 border-slate-700" />
-                          <span className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-4 border-[#0b0f19] ${statusInfo.color}`}></span>
+                          <img src={owner.avatar} alt={owner.displayName} className="w-16 h-16 rounded-2xl object-cover border border-white/10" />
+                          <span className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-[#090d16] ${statusInfo.color} shadow-lg`}></span>
                         </div>
-                        <span className="bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs px-3 py-1 rounded-full font-semibold">
+                        <span className="bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs px-3 py-1 rounded-full font-semibold">
                           <i className="fa-solid fa-crown mr-1"></i>{owner.role || "Owner"}
                         </span>
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold text-white">{owner.displayName}</h3>
-                        <p className="text-slate-400 text-sm font-mono mb-3">@{owner.username}</p>
-                        <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-3 text-xs text-slate-300">
-                          <i className="fa-solid fa-gamepad text-indigo-400 mr-2"></i>
-                          <span>Aktivität: {owner.activity || "Keine"}</span>
+                        <h3 className="text-lg font-bold text-white">{owner.displayName}</h3>
+                        <p className="text-slate-400 text-xs font-mono mb-3">@{owner.username}</p>
+                        <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-3 text-xs text-slate-300 flex items-center gap-2">
+                          <i className="fa-solid fa-gamepad text-indigo-400"></i>
+                          <span className="truncate">Aktivität: {owner.activity || "Keine"}</span>
                         </div>
                       </div>
                     </div>
                   );
                 })}
               </div>
+            ) : (
+              <div className="liquid-glass p-6 rounded-2xl text-center text-slate-400 text-sm">
+                Lade Server-Leitung Status...
+              </div>
             )}
           </div>
+
+          <footer className="text-center text-xs text-slate-500 py-4">
+            &copy; {new Date().getFullYear()} MBJC Community &bull; <a href={CONFIG.websiteUrl} className="hover:text-indigo-400">mbjc.info</a>
+          </footer>
         </div>
       );
     }
