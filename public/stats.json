@@ -1,7 +1,7 @@
 {
   "members": 24,
   "total_members": 27,
-  "online": 7,
+  "online": 5,
   "bots": 3,
   "status": "online",
   "owners": [
@@ -10,8 +10,8 @@
       "username": "mattex_17049",
       "displayName": "[\u03c7\ud835\udcaf]  Matti",
       "avatar": "https://cdn.discordapp.com/avatars/1332297769473413140/45adab33946cd63c4807217100dc79ea.png?size=1024",
-      "status": "online",
-      "activity": "Roblox with Medal",
+      "status": "offline",
+      "activity": "Keine Aktivit\u00e4t",
       "role": "Co-Owner"
     },
     {
@@ -19,10 +19,10 @@
       "username": "ben_js512",
       "displayName": "[\u03c7\ud835\udcaf] \u0432\ud835\udfe5\u03b7",
       "avatar": "https://cdn.discordapp.com/avatars/1281895040322633799/f785dfa8ab1471870955bf0a65687e96.png?size=1024",
-      "status": "dnd",
+      "status": "offline",
       "activity": "Keine Aktivit\u00e4t",
       "role": "Server Owner"
     }
   ],
-  "updatedAt": "2026-10-03T11:13:30.237842+00:00"
+  "updatedAt": "2026-10-03T11:16:30.267848+00:00"
 }
