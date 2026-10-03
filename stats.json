@@ -1,0 +1,28 @@
+{
+  "members": 184,
+  "total_members": 210,
+  "online": 42,
+  "bots": 26,
+  "status": "online",
+  "owners": [
+    {
+      "id": "987654321098765432",
+      "username": "owner_1",
+      "displayName": "Gründer / Owner 1",
+      "avatar": "https://cdn.discordapp.com/embed/avatars/0.png",
+      "status": "online",
+      "activity": "Developing Discord Bot",
+      "role": "Server Owner"
+    },
+    {
+      "id": "1332297769473413140",
+      "username": "owner_2",
+      "displayName": "Co-Owner",
+      "avatar": "https://cdn.discordapp.com/embed/avatars/1.png",
+      "status": "online",
+      "activity": "Visual Studio Code",
+      "role": "Co-Owner"
+    }
+  ],
+  "updatedAt": "2026-10-03T12:00:00.000Z"
+}
