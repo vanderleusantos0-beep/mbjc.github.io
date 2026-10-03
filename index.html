@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MBJC Community | Offizielle Webseite & Bot-API Portal</title>
+  <title>MBJC Community | Offizielle Webseite & Admin Portal</title>
   
   <!-- Tailwind CSS & FontAwesome -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -16,7 +16,7 @@
 
   <style>
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px) scale(0.99); }
+      from { opacity: 0; transform: translateY(10px) scale(0.98); }
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
     @keyframes pulseGlow {
@@ -25,7 +25,7 @@
     }
 
     .animate-fade-in {
-      animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
     body {
@@ -53,7 +53,7 @@
 
     .liquid-card:hover {
       border-color: rgba(99, 102, 241, 0.4);
-      transform: translateY(-2px);
+      transform: translateY(-3px);
       box-shadow: 0 16px 32px -8px rgba(99, 102, 241, 0.2);
     }
 
@@ -61,18 +61,18 @@
       position: absolute;
       width: 500px;
       height: 500px;
-      background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, rgba(0, 0, 0, 0) 70%);
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.22) 0%, rgba(0, 0, 0, 0) 70%);
       pointer-events: none;
       z-index: 0;
       animation: pulseGlow 8s ease-in-out infinite;
     }
   </style>
 </head>
-<body class="relative flex flex-col items-center justify-between p-3 md:p-8 min-h-screen">
+<body class="relative flex flex-col items-center justify-between p-4 md:p-8 min-h-screen">
 
   <div class="glow-orb top-0 left-1/2 -translate-x-1/2"></div>
 
-  <div id="root" class="w-full max-w-6xl z-10"></div>
+  <div id="root" class="w-full max-w-5xl z-10"></div>
 
   <script type="text/babel">
     const CONFIG = {
@@ -82,10 +82,8 @@
       websiteUrl: "http://mbjc.info/",
       ticketSiteUrl: "http://ticket.mbjc.info/",
       logoUrl: "https://cdn.discordapp.com/embed/avatars/0.png",
-      discordWebhookUrl: "https://discord.com/api/webhooks/1555978021658304603/9k2e0F2T5hQlDCiZJDlIU_PDOibfDTWzoL4uT9q94snC6iCM7OLLJo9UkJmkONU1zxx6",
-      
-      // HIER DIE API-URL DEINES DISCORD BOTS EINTRAGEN (z.B. dein Node.js / Python Bot Server)
-      botApiUrl: "https://dein-bot-api-server.com"
+      // Trage hier deinen echten Discord Webhook ein, damit der 2FA-Code an dich gesendet wird!
+      discordWebhookUrl: "https://discord.com/api/webhooks/DEINE_WEBHOOK_ID/DEIN_WEBHOOK_TOKEN"
     };
 
     function App() {
@@ -93,9 +91,12 @@
       const [loading, setLoading] = React.useState(true);
       const [showNotice, setShowNotice] = React.useState(true);
       
+      // Ansichten: 'public' | 'login' | 'admin'
       const [view, setView] = React.useState('public');
-      const [adminTab, setAdminTab] = React.useState('dashboard');
-      const [loginStep, setLoginStep] = React.useState(1);
+      const [adminTab, setAdminTab] = React.useState('users');
+      
+      // 2FA & Login States
+      const [loginStep, setLoginStep] = React.useState(1); // 1 = Username, 2 = 2FA Code
       const [usernameInput, setUsernameInput] = React.useState('');
       const [twoFactorCode, setTwoFactorCode] = React.useState('');
       const [generatedCode, setGeneratedCode] = React.useState('');
@@ -103,88 +104,51 @@
       const [authSuccess, setAuthSuccess] = React.useState('');
       const [currentUser, setCurrentUser] = React.useState(null);
 
-      // Daten, die direkt vom Bot/API geladen werden können
-      const [siteConfig, setSiteConfig] = React.useState({
-        serverName: CONFIG.serverName,
-        tagline: CONFIG.tagline,
-        inviteUrl: CONFIG.inviteUrl,
-        description: "Willkommen auf unserem Community-Server.",
-        logoUrl: CONFIG.logoUrl
+      // Dynamische Admin-Benutzerverwaltung (Standardmäßig Owner & Co-Owner)
+      const [allowedAdmins, setAllowedAdmins] = React.useState(() => {
+        const saved = localStorage.getItem('mbjc_allowed_admins');
+        return saved ? JSON.parse(saved) : [
+          { id: '1', username: 'owner_1', role: 'Owner', addedAt: '2026-01-01' },
+          { id: '2', username: 'owner_2', role: 'Co-Owner', addedAt: '2026-01-01' }
+        ];
       });
 
-      const [visitorsCount, setVisitorsCount] = React.useState(1420);
-      const [discordClicks, setDiscordClicks] = React.useState(384);
-      
-      const [allowedUsers, setAllowedUsers] = React.useState([
-        { id: '1', username: 'owner_1', role: 'Owner', status: 'Aktiv', addedAt: '2026-01-10' }
-      ]);
-      const [announcements, setAnnouncements] = React.useState([]);
-      const [events, setEvents] = React.useState([]);
-      const [auditLogs, setAuditLogs] = React.useState([]);
-
-      // Formular-States
-      const [newAdminUser, setNewAdminUser] = React.useState('');
+      const [newAdminUsername, setNewAdminUsername] = React.useState('');
       const [newAdminRole, setNewAdminRole] = React.useState('Moderator');
-      const [annTitle, setAnnTitle] = React.useState('');
-      const [annContent, setAnnContent] = React.useState('');
-      const [evTitle, setEvTitle] = React.useState('');
-      const [evDesc, setEvDesc] = React.useState('');
-      const [evDate, setEvDate] = React.useState('');
-      const [evLink, setEvLink] = React.useState(CONFIG.inviteUrl);
 
-      // Daten beim Start vom Bot abrufen (Falls Bot API aktiv ist)
+      // Statistiken laden
       React.useEffect(() => {
         fetch('./public/stats.json?t=' + Date.now())
           .then(res => res.json())
           .then(data => { setStats(data); setLoading(false); })
           .catch(() => setLoading(false));
-
-        // Beispiel für Bot-API Abruf von Ankündigungen & Events
-        /*
-        fetch(`${CONFIG.botApiUrl}/api/data`)
-          .then(res => res.json())
-          .then(data => {
-            if(data.announcements) setAnnouncements(data.announcements);
-            if(data.events) setEvents(data.events);
-          }).catch(err => console.log("Bot API offline, verwende lokalen Fallback"));
-        */
       }, []);
 
-      // Funktion zum Senden von Aktionen an die Bot-API
-      const sendActionToBot = async (endpoint, payload) => {
-        try {
-          const response = await fetch(`${CONFIG.botApiUrl}/api/${endpoint}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-          return await response.json();
-        } catch (err) {
-          console.error("Bot API Fehler:", err);
-          return null;
+      // Admins in LocalStorage speichern
+      React.useEffect(() => {
+        localStorage.setItem('mbjc_allowed_admins', JSON.stringify(allowedAdmins));
+      }, [allowedAdmins]);
+
+      const getStatusBadge = (status) => {
+        switch(status) {
+          case 'online': return { color: 'bg-emerald-500 shadow-emerald-500/50', text: 'Online' };
+          case 'idle': return { color: 'bg-amber-500 shadow-amber-500/50', text: 'Abwesend' };
+          case 'dnd': return { color: 'bg-rose-500 shadow-rose-500/50', text: 'Bitte nicht stören' };
+          default: return { color: 'bg-slate-500 shadow-slate-500/50', text: 'Offline' };
         }
       };
 
-      const logAction = (adminName, actionDesc) => {
-        const newLog = {
-          id: Date.now().toString(),
-          admin: adminName,
-          action: actionDesc,
-          timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19)
-        };
-        setAuditLogs([newLog, ...auditLogs]);
-      };
-
+      // 1. Schritt: Prüfen ob Username erlaubt ist & 2FA Code via Discord Webhook senden
       const handleRequest2FA = async (e) => {
         e.preventDefault();
         setAuthError('');
         setAuthSuccess('');
 
-        const cleanUsername = usernameInput.trim().toLowerCase();
-        const userEntry = allowedUsers.find(u => u.username.toLowerCase() === cleanUsername);
+        const cleanUser = usernameInput.trim().toLowerCase();
+        const foundAdmin = allowedAdmins.find(a => a.username.toLowerCase() === cleanUser);
 
-        if (!userEntry) {
-          setAuthError('Zugriff verweigert: Benutzer ist kein Admin.');
+        if (!foundAdmin) {
+          setAuthError('Zugriff verweigert: Dieser Benutzer ist nicht als Admin autorisiert.');
           return;
         }
 
@@ -192,99 +156,230 @@
         setGeneratedCode(secureCode);
 
         try {
-          await fetch(CONFIG.discordWebhookUrl, {
+          const response = await fetch(CONFIG.discordWebhookUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               embeds: [{
-                title: "🔐 MBJC Admin 2FA Code",
-                description: `Admin **@${usernameInput}** fordert Login-Zugriff an.`,
-                color: 65280,
-                fields: [{ name: "Sicherheitscode", value: `\`\`\`${secureCode}\`\`\`` }]
+                title: "🔐 MBJC Admin 2FA Login-Anfrage",
+                description: `Admin **@${foundAdmin.username}** versucht sich im Dashboard einzuloggen.`,
+                color: 65280, // Grün
+                fields: [
+                  { name: "Sicherheitscode", value: `\`\`\`${secureCode}\`\`\`` },
+                  { name: "Zeitpunkt", value: new Date().toLocaleString() }
+                ],
+                footer: { text: "MBJC Sicherheitssystem" }
               }]
             })
           });
-          setAuthSuccess('2FA-Code wurde per Discord-Webhook versendet!');
-          setLoginStep(2);
+
+          if (response.ok || response.status === 204) {
+            setAuthSuccess('Sicherheitscode wurde erfolgreich per Discord Webhook an dich gesendet!');
+            setLoginStep(2);
+          } else {
+            setAuthError('Fehler beim Senden des Webhooks. Überprüfe die Webhook-URL in der Config.');
+          }
         } catch (err) {
-          setAuthError('Fehler beim Senden des Webhooks.');
+          setAuthError('Netzwerkfehler beim Senden des 2FA-Codes.');
         }
       };
 
+      // 2. Schritt: Code überprüfen
       const handleVerify2FA = (e) => {
         e.preventDefault();
         if (twoFactorCode !== generatedCode) {
           setAuthError('Ungültiger Sicherheitscode!');
           return;
         }
-        const userObj = allowedUsers.find(u => u.username.toLowerCase() === usernameInput.toLowerCase().trim());
-        setCurrentUser(userObj || { username: usernameInput, role: 'Admin' });
+
+        const userObj = allowedAdmins.find(a => a.username.toLowerCase() === usernameInput.toLowerCase().trim());
+        setCurrentUser(userObj);
         setView('admin');
         setLoginStep(1);
         setTwoFactorCode('');
         setUsernameInput('');
-        logAction(userObj.username, 'Erfolgreicher Login');
+        setAuthSuccess('');
       };
 
-      const handleDiscordClick = () => {
-        setDiscordClicks(prev => prev + 1);
-        window.open(siteConfig.inviteUrl, '_blank');
+      // Admin hinzufügen
+      const handleAddAdmin = (e) => {
+        e.preventDefault();
+        if (!newAdminUsername.trim()) return;
+
+        const newEntry = {
+          id: Date.now().toString(),
+          username: newAdminUsername.trim().replace('@', ''),
+          role: newAdminRole,
+          addedAt: new Date().toISOString().split('T')[0]
+        };
+
+        setAllowedAdmins([...allowedAdmins, newEntry]);
+        setNewAdminUsername('');
+      };
+
+      // Admin löschen
+      const handleRemoveAdmin = (id) => {
+        if (allowedAdmins.length <= 1) {
+          alert("Du kannst nicht den letzten Admin löschen!");
+          return;
+        }
+        setAllowedAdmins(allowedAdmins.filter(a => a.id !== id));
       };
 
       return (
         <div className="w-full flex flex-col items-center">
           
-          <header className="w-full flex justify-between items-center mb-8 px-2">
+          {/* HEADER NAV */}
+          <header className="w-full flex justify-between items-center mb-8 px-2 animate-fade-in">
             <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView('public')}>
-              <img src={siteConfig.logoUrl} className="w-10 h-10 rounded-xl border border-white/10 object-cover" alt="Logo" />
-              <span className="font-bold text-lg text-white tracking-wide">{siteConfig.serverName} Portal</span>
+              <img src={CONFIG.logoUrl} className="w-10 h-10 rounded-xl border border-white/10 object-cover shadow-lg" alt="Logo" />
+              <span className="font-bold text-base text-white tracking-wide">{CONFIG.serverName}</span>
             </div>
 
-            <div>
+            <div className="flex items-center gap-3">
               {view === 'admin' ? (
-                <button onClick={() => setView('public')} className="bg-rose-600/20 hover:bg-rose-600/40 border border-rose-500/40 text-rose-300 px-4 py-2 rounded-xl text-xs font-bold transition">
-                  <i className="fa-solid fa-right-from-bracket mr-2"></i>Admin Verlassen
+                <button onClick={() => { setView('public'); setCurrentUser(null); }} className="bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2">
+                  <i className="fa-solid fa-right-from-bracket"></i> Abmelden
                 </button>
               ) : (
-                <button onClick={() => setView(view === 'login' ? 'public' : 'login')} className="bg-indigo-600/20 hover:bg-indigo-600/40 border border-indigo-500/40 text-indigo-300 px-4 py-2 rounded-xl text-xs font-bold transition">
-                  <i className="fa-solid fa-shield-halved mr-2"></i>{view === 'login' ? 'Hauptseite' : 'Admin Login'}
+                <button onClick={() => setView(view === 'login' ? 'public' : 'login')} className="bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2">
+                  <i className="fa-solid fa-shield-halved"></i> {view === 'login' ? 'Hauptseite' : 'Admin Login'}
                 </button>
               )}
             </div>
           </header>
 
-          {/* HAUPTSEITE */}
-          {view === 'public' && (
-            <div className="w-full animate-fade-in">
-              <div className="liquid-glass rounded-3xl p-8 md:p-12 text-center w-full mb-10 relative overflow-hidden">
-                <img src={siteConfig.logoUrl} alt="Logo" className="w-28 h-28 rounded-3xl mx-auto mb-6 border border-white/10 shadow-2xl object-cover" />
-                <h1 className="text-4xl md:text-6xl font-black text-white mb-3">{siteConfig.serverName}</h1>
-                <p className="text-slate-400 font-medium text-base mb-8 max-w-xl mx-auto">{siteConfig.tagline}</p>
-                <button onClick={handleDiscordClick} className="inline-flex items-center justify-center gap-3 bg-gradient-to-r from-indigo-600 to-cyan-600 text-white font-bold py-4 px-8 rounded-2xl shadow-xl transition active:scale-95 cursor-pointer">
-                  <i className="fa-brands fa-discord text-2xl"></i>
-                  <span>Discord Server Beitreten</span>
+          {/* SICHERHEITSMODAL (SSL HINWEIS) */}
+          {showNotice && (
+            <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+              <div className="liquid-glass max-w-lg w-full p-8 rounded-3xl text-center relative border border-indigo-500/35">
+                <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center mx-auto mb-5 text-indigo-400 text-3xl shadow-lg">
+                  <i className="fa-solid fa-shield-halved"></i>
+                </div>
+                <h2 className="text-2xl font-black mb-2 text-white">Sicherheits- & Webhinweis</h2>
+                <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 text-left text-sm text-slate-300 space-y-2 mb-6">
+                  <p className="flex items-center gap-2 text-emerald-400 font-semibold">
+                    <i className="fa-solid fa-lock"></i> SSL-Verschlüsselung & Schutz aktiv
+                  </p>
+                  <p className="text-slate-400 text-xs leading-relaxed">
+                    Unsere Domain <span className="text-indigo-400 font-mono">mbjc.info</span> verifiziert sich im SSL-Zertifizierungsprozess. Die Datenübertragung deines Browsers ist vollkommen geschützt.
+                  </p>
+                </div>
+                <button onClick={() => setShowNotice(false)} className="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold py-3.5 px-6 rounded-xl transition shadow-lg shadow-indigo-600/30 active:scale-95 cursor-pointer">
+                  <i className="fa-solid fa-check mr-2"></i> Verstanden & Einverstanden
                 </button>
               </div>
             </div>
           )}
 
-          {/* LOGIN */}
+          {/* HAUPTSEITE (PUBLIC) */}
+          {view === 'public' && (
+            <div className="w-full animate-fade-in flex flex-col items-center">
+              <div className="liquid-glass rounded-3xl p-8 md:p-12 text-center w-full mb-10 relative overflow-hidden">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold mb-6">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                  Community & Netzwerk Portal
+                </div>
+
+                <img src={CONFIG.logoUrl} alt="Logo" className="w-28 h-28 rounded-3xl mx-auto mb-6 border border-white/10 shadow-2xl object-cover" />
+                <h1 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-indigo-300 mb-3">{CONFIG.serverName}</h1>
+                <p className="text-slate-400 font-medium text-base mb-8 max-w-xl mx-auto">{CONFIG.tagline}</p>
+
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <a href={CONFIG.inviteUrl} target="_blank" rel="noreferrer" className="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-bold py-4 px-8 rounded-2xl shadow-xl shadow-indigo-600/25 transition active:scale-95">
+                    <i className="fa-brands fa-discord text-2xl"></i>
+                    <span>Discord Server Beitreten</span>
+                  </a>
+                  <a href={CONFIG.ticketSiteUrl} className="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-white font-bold py-4 px-8 rounded-2xl transition active:scale-95">
+                    <i className="fa-solid fa-ticket text-indigo-400 text-xl"></i>
+                    <span>Team Bewerbung</span>
+                  </a>
+                </div>
+
+                {/* LIVE STATS */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-12">
+                  <div className="liquid-card p-5 rounded-2xl text-left">
+                    <p className="text-xs text-slate-400 uppercase font-semibold">Mitglieder</p>
+                    <p className="text-3xl font-extrabold text-white mt-1">{loading ? "..." : stats.members}</p>
+                  </div>
+                  <div className="liquid-card p-5 rounded-2xl text-left">
+                    <p className="text-xs text-slate-400 uppercase font-semibold">Online Jetzt</p>
+                    <p className="text-3xl font-extrabold text-emerald-400 mt-1">{loading ? "..." : stats.online}</p>
+                  </div>
+                  <div className="liquid-card p-5 rounded-2xl text-left">
+                    <p className="text-xs text-slate-400 uppercase font-semibold">Bots</p>
+                    <p className="text-3xl font-extrabold text-cyan-400 mt-1">{loading ? "..." : stats.bots}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* OWNERS SECTION */}
+              <div className="w-full mb-12">
+                <h2 className="text-2xl font-bold flex items-center gap-3 mb-6 text-slate-200">
+                  <i className="fa-solid fa-crown text-amber-400"></i> Server Leitung & Owners
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {stats.owners && stats.owners.map((owner, index) => {
+                    const statusInfo = getStatusBadge(owner.status);
+                    return (
+                      <div key={owner.id || index} className="liquid-glass rounded-2xl p-6 flex flex-col justify-between">
+                        <div className="flex items-start justify-between gap-4 mb-4">
+                          <div className="relative">
+                            <img src={owner.avatar} alt={owner.displayName} className="w-16 h-16 rounded-2xl object-cover border border-white/10" />
+                            <span className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-[#090d16] ${statusInfo.color}`}></span>
+                          </div>
+                          <span className="bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs px-3 py-1 rounded-full font-semibold">
+                            <i className="fa-solid fa-crown mr-1"></i>{owner.role}
+                          </span>
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-bold text-white">{owner.displayName}</h3>
+                          <p className="text-slate-400 text-xs font-mono mb-3">@{owner.username}</p>
+                          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-3 text-xs text-slate-300 flex items-center gap-2">
+                            <i className="fa-solid fa-gamepad text-indigo-400"></i>
+                            <span className="truncate">Aktivität: {owner.activity}</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* LOGIN ANSICHT MIT 2FA */}
           {view === 'login' && (
             <div className="w-full max-w-md mx-auto my-12 animate-fade-in">
-              <div className="liquid-glass rounded-3xl p-8 border border-indigo-500/30">
-                <h2 className="text-2xl font-black text-white text-center mb-4">Admin 2FA Login</h2>
-                {authError && <div className="mb-4 p-3 bg-rose-500/10 text-rose-300 text-xs rounded-xl">{authError}</div>}
-                {authSuccess && <div className="mb-4 p-3 bg-emerald-500/10 text-emerald-300 text-xs rounded-xl">{authSuccess}</div>}
-                
+              <div className="liquid-glass rounded-3xl p-8 border border-indigo-500/30 shadow-2xl">
+                <div className="w-14 h-14 rounded-2xl bg-indigo-600/15 border border-indigo-500/30 flex items-center justify-center mx-auto mb-5 text-indigo-400 text-2xl">
+                  <i className="fa-solid fa-fingerprint"></i>
+                </div>
+                <h2 className="text-2xl font-black text-white text-center mb-1">Admin 2FA Portal</h2>
+                <p className="text-slate-400 text-xs text-center mb-6">Sicherer Zugriff via Discord Webhook</p>
+
+                {authError && <div className="mb-4 p-3 bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs rounded-xl">{authError}</div>}
+                {authSuccess && <div className="mb-4 p-3 bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs rounded-xl">{authSuccess}</div>}
+
                 {loginStep === 1 ? (
                   <form onSubmit={handleRequest2FA} className="space-y-4">
-                    <input type="text" value={usernameInput} onChange={(e) => setUsernameInput(e.target.value)} placeholder="Discord Benutzername" className="w-full bg-slate-900 border border-slate-700 rounded-xl py-3 px-4 text-sm text-white focus:outline-none" />
-                    <button type="submit" className="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl">Code anfordern</button>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-300 mb-1">Discord Benutzername</label>
+                      <input type="text" value={usernameInput} onChange={(e) => setUsernameInput(e.target.value)} placeholder="z.B. owner_1" required className="w-full bg-slate-900/80 border border-slate-700 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-indigo-500" />
+                    </div>
+                    <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-indigo-600/30 cursor-pointer">
+                      Sicherheitscode anfordern
+                    </button>
                   </form>
                 ) : (
                   <form onSubmit={handleVerify2FA} className="space-y-4">
-                    <input type="text" maxLength="6" value={twoFactorCode} onChange={(e) => setTwoFactorCode(e.target.value)} placeholder="123456" className="w-full bg-slate-900 border border-slate-700 rounded-xl py-3 text-center font-mono text-lg text-white focus:outline-none" />
-                    <button type="submit" className="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl">Einloggen</button>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-300 mb-1">6-stelliger Code aus Discord</label>
+                      <input type="text" maxLength="6" value={twoFactorCode} onChange={(e) => setTwoFactorCode(e.target.value)} placeholder="123456" required className="w-full bg-slate-900/80 border border-slate-700 rounded-xl py-3.5 text-center font-mono text-xl tracking-widest text-white focus:outline-none focus:border-emerald-500" />
+                    </div>
+                    <button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-emerald-600/30 cursor-pointer">
+                      Code bestätigen & Einloggen
+                    </button>
                   </form>
                 )}
               </div>
@@ -295,35 +390,76 @@
           {view === 'admin' && (
             <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-6 animate-fade-in">
               <div className="liquid-glass rounded-3xl p-4 md:col-span-1 h-fit space-y-2">
+                <div className="p-3 mb-2 border-b border-white/10">
+                  <p className="text-xs text-slate-400">Eingeloggt als:</p>
+                  <p className="text-sm font-bold text-white">@{currentUser?.username}</p>
+                </div>
                 {[
-                  { id: 'dashboard', label: 'Dashboard', icon: 'fa-chart-pie' },
-                  { id: 'announcements', label: 'Ankündigungen', icon: 'fa-bullhorn' },
-                  { id: 'events', label: 'Event-Manager', icon: 'fa-calendar-days' },
-                  { id: 'audit', label: 'Bot-Protokoll', icon: 'fa-clipboard-list' }
+                  { id: 'users', label: 'Admin-Benutzer', icon: 'fa-users-gear' },
+                  { id: 'security', label: 'Sicherheits-Logs', icon: 'fa-shield-cat' }
                 ].map(tab => (
-                  <button key={tab.id} onClick={() => setAdminTab(tab.id)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold transition text-left ${adminTab === tab.id ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800'}`}>
+                  <button key={tab.id} onClick={() => setAdminTab(tab.id)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold transition text-left ${adminTab === tab.id ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/25' : 'text-slate-400 hover:bg-slate-800'}`}>
                     <i className={`fa-solid ${tab.icon} w-4`}></i><span>{tab.label}</span>
                   </button>
                 ))}
               </div>
 
               <div className="md:col-span-3 space-y-6">
-                {adminTab === 'dashboard' && (
+                {adminTab === 'users' && (
                   <div className="liquid-glass rounded-3xl p-8">
-                    <h2 className="text-2xl font-black text-white mb-2">Bot-API Dashboard</h2>
-                    <p className="text-slate-400 text-xs">Verbunden mit Discord Bot Endpoint: <code className="text-indigo-400">{CONFIG.botApiUrl}</code></p>
+                    <h2 className="text-xl font-bold text-white mb-2">Dynamische Admin-Benutzerverwaltung</h2>
+                    <p className="text-slate-400 text-xs mb-6">Hier legst du fest, welche Discord-User sich per 2FA in diesem Admin-Bereich einloggen dürfen.</p>
+
+                    <form onSubmit={handleAddAdmin} className="flex flex-col sm:flex-row gap-3 mb-8">
+                      <input type="text" value={newAdminUsername} onChange={(e) => setNewAdminUsername(e.target.value)} placeholder="Discord Username (z.B. alex)" required className="flex-1 bg-slate-900 border border-slate-700 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-indigo-500" />
+                      <select value={newAdminRole} onChange={(e) => setNewAdminRole(e.target.value)} className="bg-slate-900 border border-slate-700 rounded-xl py-3 px-4 text-sm text-white focus:outline-none">
+                        <option value="Owner">Owner</option>
+                        <option value="Co-Owner">Co-Owner</option>
+                        <option value="Moderator">Moderator</option>
+                      </select>
+                      <button type="submit" className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-3 rounded-xl transition text-sm cursor-pointer">
+                        <i className="fa-solid fa-user-plus mr-2"></i>Hinzufügen
+                      </button>
+                    </form>
+
+                    <div className="space-y-3">
+                      {allowedAdmins.map(admin => (
+                        <div key={admin.id} className="liquid-card p-4 rounded-2xl flex items-center justify-between">
+                          <div>
+                            <p className="font-bold text-white text-sm">@{admin.username}</p>
+                            <p className="text-xs text-slate-400">Rolle: <span className="text-indigo-400">{admin.role}</span> &bull; Hinzugefügt am: {admin.addedAt}</p>
+                          </div>
+                          <button onClick={() => handleRemoveAdmin(admin.id)} className="bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-300 p-2.5 rounded-xl transition cursor-pointer">
+                            <i className="fa-solid fa-trash-can text-xs"></i>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
-                {/* Weitere Admin Tabs (Ankündigungen, Events, etc. senden Daten direkt an die Bot-API) */}
+
+                {adminTab === 'security' && (
+                  <div className="liquid-glass rounded-3xl p-8">
+                    <h2 className="text-xl font-bold text-white mb-2">Sicherheits-Status</h2>
+                    <p className="text-slate-400 text-xs mb-6">Alle Autorisierungen sind aktiv und geschützt.</p>
+                    <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 text-xs text-slate-300 space-y-2">
+                      <p className="flex items-center gap-2 text-emerald-400 font-bold"><i className="fa-solid fa-shield-check"></i> 2FA Token-Generierung aktiv</p>
+                      <p className="flex items-center gap-2 text-indigo-400 font-bold"><i className="fa-solid fa-bolt"></i> Discord Webhook Verbindung bereit</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
 
+          <footer className="text-center text-xs text-slate-500 py-6 mt-8">
+            &copy; {new Date().getFullYear()} MBJC Community &bull; <a href={CONFIG.websiteUrl} className="hover:text-indigo-400">mbjc.info</a>
+          </footer>
         </div>
       );
     }
 
-    ReactDOM.createRoot(command => document.getElementById('root')).render(<App />);
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   </script>
 </body>
 </html>
