@@ -57,6 +57,7 @@
       tagline: "Deine Heimat für Gaming, Development & Network",
       inviteUrl: "https://discord.gg/2Nuwdyr4tZ",
       websiteUrl: "http://mbjc.info/",
+      ticketSiteUrl: "http://ticket.mbjc.info/",
       logoUrl: "https://cdn.discordapp.com/embed/avatars/0.png"
     };
 
@@ -124,10 +125,16 @@
             </h1>
             <p className="text-slate-400 font-medium text-base md:text-lg mb-8 max-w-xl mx-auto">{CONFIG.tagline}</p>
 
-            <a href={CONFIG.inviteUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-3 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-bold py-4 px-10 rounded-2xl transition duration-300 shadow-xl shadow-indigo-600/25 active:scale-95">
-              <i className="fa-brands fa-discord text-2xl"></i>
-              <span>Discord Server Beitreten</span>
-            </a>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <a href={CONFIG.inviteUrl} target="_blank" rel="noreferrer" className="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-bold py-4 px-8 rounded-2xl transition duration-300 shadow-xl shadow-indigo-600/25 active:scale-95">
+                <i className="fa-brands fa-discord text-2xl"></i>
+                <span>Discord Server Beitreten</span>
+              </a>
+              <a href={CONFIG.ticketSiteUrl} className="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-white font-bold py-4 px-8 rounded-2xl transition duration-300 active:scale-95">
+                <i className="fa-solid fa-ticket text-indigo-400 text-xl"></i>
+                <span>Team Bewerbung</span>
+              </a>
+            </div>
 
             {/* LIVE STATS */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-12">
