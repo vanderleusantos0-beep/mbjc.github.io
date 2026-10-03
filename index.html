@@ -3,11 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MABEJU WEBSEITE</title>
+  <title>Discord Server Community</title>
   <!-- Tailwind CSS & FontAwesome Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- React & Babel für In-Browser Rendering -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -22,182 +21,135 @@
 
   <script type="text/babel">
     const KONFIGURATION = {
-      serverName: "MABEJU Community",
+      serverName: "Nexus Community",
       tagline: "Deine ultimative Community für Gaming & Development",
-      description: "Tritt unserem Discord bei! Spiele Live mit! Mit Vielen Coolen Leute!.",
-      inviteUrl: "https://discord.gg/N3c7Myuu6g", // <-- DEIN INVITE LINK
+      description: "Tritt unserem Discord bei! Finde Squad-Mitglieder, tausche dich aus und nimm an unseren Events teil.",
+      inviteUrl: "https://discord.gg/dein-code",
       logoUrl: "https://cdn.discordapp.com/embed/avatars/0.png"
     };
 
     function App() {
-      const [stats, setStats] = React.useState({
-        members: 0,
-        online: 0,
-        bots: 0,
-        status: "offline",
-        owners: [],
-        updatedAt: null
-      });
+      const [stats, setStats] = React.useState({ members: 0, online: 0, bots: 0, owners: [], updatedAt: null });
       const [loading, setLoading] = React.useState(true);
+      const [showNotice, setShowNotice] = React.useState(true);
 
       React.useEffect(() => {
-        // Lade Live-Daten aus public/stats.json (vom Discord Bot generiert)
         fetch('./public/stats.json?t=' + Date.now())
           .then(res => res.json())
-          .then(data => {
-            setStats(data);
-            setLoading(false);
-          })
-          .catch(err => {
-            console.log("Keine stats.json gefunden oder Fehler beim Laden:", err);
-            setLoading(false);
-          });
+          .then(data => { setStats(data); setLoading(false); })
+          .catch(() => setLoading(false));
       }, []);
 
-      // Hilfsfunktion für Status-Farben (Online, Idle, DND, Offline)
       const getStatusBadge = (status) => {
         switch(status) {
-          case 'online':
-            return { color: 'bg-emerald-500', text: 'Online' };
-          case 'idle':
-            return { color: 'bg-amber-500', text: 'Abwesend' };
-          case 'dnd':
-            return { color: 'bg-rose-500', text: 'Bitte nicht stören' };
-          default:
-            return { color: 'bg-slate-500', text: 'Offline' };
+          case 'online': return { color: 'bg-emerald-500', text: 'Online' };
+          case 'idle': return { color: 'bg-amber-500', text: 'Abwesend' };
+          case 'dnd': return { color: 'bg-rose-500', text: 'Bitte nicht stören' };
+          default: return { color: 'bg-slate-500', text: 'Offline' };
         }
       };
 
       return (
-        <div className="min-h-screen bg-[#0b0f19] text-white flex flex-col items-center p-4 md:p-10">
+        <div className="min-h-screen bg-[#0b0f19] text-white flex flex-col items-center p-4 md:p-10 relative">
           
-          {/* Header Banner */}
-          <div className="max-w-4xl w-full glass-card rounded-3xl p-8 md:p-12 shadow-2xl text-center glow-effect mb-12 relative overflow-hidden">
-            <div className="absolute -top-24 -left-24 w-60 h-60 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
-            <div className="absolute -bottom-24 -right-24 w-60 h-60 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
+          {/* SICHERHEITS- & ZERTIFIKAT-BILDSCHIRM (MODAL) */}
+          {showNotice && (
+            <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+              <div className="glass-card max-w-lg w-full p-8 rounded-3xl border border-amber-500/30 text-center shadow-2xl relative">
+                <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/40 flex items-center justify-center mx-auto mb-5 text-amber-400 text-3xl">
+                  <i className="fa-solid fa-shield-halved"></i>
+                </div>
+                <h2 className="text-2xl font-black mb-3">Sicherheit & Zertifikat</h2>
+                <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 text-left text-sm text-slate-300 space-y-2 mb-6">
+                  <p className="flex items-center gap-2 text-emerald-400 font-semibold">
+                    <i className="fa-solid fa-lock"></i> Alle deine Daten sind geschützt und sicher.
+                  </p>
+                  <p className="text-slate-400 text-xs leading-relaxed">
+                    Falls dein Browser die Webseite aktuell als <span className="text-amber-400">„Nicht sicher“</span> einstuft: 
+                    Das SSL-Sicherheitszertifikat wird aktuell verifiziert und von unserer Domain ausgestellt. 
+                    Der Schutz deiner Privatsphäre ist zu jeder Zeit gewährleistet!
+                  </p>
+                </div>
+                <button 
+                  onClick={() => setShowNotice(false)}
+                  className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 px-6 rounded-xl transition duration-200 shadow-lg shadow-indigo-600/30"
+                >
+                  <i className="fa-solid fa-check mr-2"></i> Verstanden & Fortfahren
+                </button>
+              </div>
+            </div>
+          )}
 
+          {/* MAIN PAGE */}
+          <div className="max-w-4xl w-full glass-card rounded-3xl p-8 md:p-12 shadow-2xl text-center glow-effect mb-12">
             <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold mb-6">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
               Offizielle Discord Community
             </span>
 
-            <img 
-              src={KONFIGURATION.logoUrl} 
-              alt="Logo" 
-              className="w-28 h-28 rounded-2xl mx-auto mb-6 border-2 border-indigo-500/50 shadow-xl object-cover"
-            />
+            <img src={KONFIGURATION.logoUrl} alt="Logo" className="w-28 h-28 rounded-2xl mx-auto mb-6 border-2 border-indigo-500/50 shadow-xl object-cover" />
             
-            <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white mb-3">
-              {KONFIGURATION.serverName}
-            </h1>
-            
+            <h1 className="text-4xl md:text-5xl font-black text-white mb-3">{KONFIGURATION.serverName}</h1>
             <p className="text-indigo-400 font-medium text-lg mb-4">{KONFIGURATION.tagline}</p>
             <p className="text-slate-300 mb-8 max-w-2xl mx-auto leading-relaxed">{KONFIGURATION.description}</p>
 
-            {/* Main CTA Button */}
-            <a 
-              href={KONFIGURATION.inviteUrl} 
-              target="_blank" 
-              rel="noreferrer"
-              className="inline-flex items-center gap-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 px-10 rounded-2xl transition duration-200 shadow-lg shadow-indigo-600/40 transform hover:-translate-y-1 active:translate-y-0"
-            >
+            <a href={KONFIGURATION.inviteUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 px-10 rounded-2xl transition duration-200 shadow-lg shadow-indigo-600/40">
               <i className="fa-brands fa-discord text-2xl"></i>
               <span>Jetzt Discord Beitreten</span>
             </a>
 
-            {/* Server Live Stats Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-12">
               <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl text-left">
-                <p className="text-xs text-slate-400 uppercase font-semibold tracking-wider">Mitglieder</p>
-                <p className="text-3xl font-extrabold text-white mt-1">
-                  {loading ? "..." : (stats.members || 0)}
-                </p>
+                <p className="text-xs text-slate-400 uppercase font-semibold">Mitglieder</p>
+                <p className="text-3xl font-extrabold text-white mt-1">{loading ? "..." : (stats.members || 0)}</p>
               </div>
-
               <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl text-left">
-                <p className="text-xs text-slate-400 uppercase font-semibold tracking-wider">Online Jetzt</p>
-                <p className="text-3xl font-extrabold text-emerald-400 mt-1">
-                  {loading ? "..." : (stats.online || 0)}
-                </p>
+                <p className="text-xs text-slate-400 uppercase font-semibold">Online Jetzt</p>
+                <p className="text-3xl font-extrabold text-emerald-400 mt-1">{loading ? "..." : (stats.online || 0)}</p>
               </div>
-
               <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl text-left">
-                <p className="text-xs text-slate-400 uppercase font-semibold tracking-wider">Bots</p>
-                <p className="text-3xl font-extrabold text-indigo-400 mt-1">
-                  {loading ? "..." : (stats.bots || 0)}
-                </p>
+                <p className="text-xs text-slate-400 uppercase font-semibold">Bots</p>
+                <p className="text-3xl font-extrabold text-indigo-400 mt-1">{loading ? "..." : (stats.bots || 0)}</p>
               </div>
             </div>
-
-            {stats.updatedAt && (
-              <p className="text-xs text-slate-500 mt-6">
-                Zuletzt aktualisiert: {new Date(stats.updatedAt).toLocaleString("de-DE")}
-              </p>
-            )}
           </div>
 
-          {/* DYNAMISCHE OWNER & TEAM SEKTION */}
+          {/* OWNERS */}
           <div className="max-w-4xl w-full mb-16">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl md:text-3xl font-bold flex items-center justify-center gap-2">
-                <i className="fa-solid font-bold text-amber-400 fa-crown"></i>
-                <span>Server Leitung & Owners</span>
-              </h2>
-              <p className="text-slate-400 text-sm mt-1">Automatische Live-Abfrage direkt über den Discord-Bot</p>
-            </div>
+            <h2 className="text-2xl font-bold flex items-center justify-center gap-2 mb-6">
+              <i className="fa-solid font-bold text-amber-400 fa-crown"></i>
+              <span>Server Leitung & Owners</span>
+            </h2>
 
-            {loading ? (
-              <div className="text-center py-12 text-slate-500">
-                <i className="fa-solid fa-spinner fa-spin text-2xl mb-2"></i>
-                <p>Lade Owner-Daten...</p>
-              </div>
-            ) : stats.owners && stats.owners.length > 0 ? (
+            {stats.owners && stats.owners.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {stats.owners.map((owner, index) => {
                   const statusInfo = getStatusBadge(owner.status);
                   return (
-                    <div key={owner.id || index} className="glass-card rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between">
+                    <div key={owner.id || index} className="glass-card rounded-2xl p-6 relative flex flex-col justify-between">
                       <div className="flex items-start justify-between gap-4 mb-4">
                         <div className="relative">
-                          <img 
-                            src={owner.avatar} 
-                            alt={owner.displayName} 
-                            className="w-16 h-16 rounded-2xl object-cover border-2 border-slate-700"
-                          />
-                          <span 
-                            title={statusInfo.text}
-                            className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-4 border-[#0b0f19] ${statusInfo.color}`}
-                          ></span>
+                          <img src={owner.avatar} alt={owner.displayName} className="w-16 h-16 rounded-2xl object-cover border-2 border-slate-700" />
+                          <span className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-4 border-[#0b0f19] ${statusInfo.color}`}></span>
                         </div>
-                        <span className="bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs px-3 py-1 rounded-full font-semibold flex items-center gap-1.5">
-                          <i className="fa-solid fa-crown text-xs"></i>
-                          {owner.role || "Owner"}
+                        <span className="bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs px-3 py-1 rounded-full font-semibold">
+                          <i className="fa-solid fa-crown mr-1"></i>{owner.role || "Owner"}
                         </span>
                       </div>
-
                       <div>
                         <h3 className="text-xl font-bold text-white">{owner.displayName}</h3>
                         <p className="text-slate-400 text-sm font-mono mb-3">@{owner.username}</p>
-                        
-                        <div className="bg-slate-900/60 border border-slate-800/80 rounded-xl p-3 text-xs text-slate-300 flex items-center gap-2 mb-2">
-                          <i className="fa-solid fa-gamepad text-indigo-400"></i>
-                          <span className="truncate">
-                            <strong className="text-slate-400">Aktivität:</strong> {owner.activity || "Keine Aktivität"}
-                          </span>
+                        <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-3 text-xs text-slate-300">
+                          <i className="fa-solid fa-gamepad text-indigo-400 mr-2"></i>
+                          <span>Aktivität: {owner.activity || "Keine"}</span>
                         </div>
                       </div>
                     </div>
                   );
                 })}
               </div>
-            ) : (
-              <div className="glass-card rounded-2xl p-8 text-center text-slate-400">
-                <p>Noch keine Owner-Daten in <code className="text-indigo-400">public/stats.json</code> vorhanden.</p>
-                <p className="text-xs text-slate-500 mt-2">Starte deinen Bot, damit dieser die Live-Daten automatisch eintragen kann.</p>
-              </div>
             )}
           </div>
-
         </div>
       );
     }
