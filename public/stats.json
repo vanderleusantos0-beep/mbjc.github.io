@@ -4,5 +4,16 @@
   "online": 6,
   "bots": 3,
   "status": "online",
-  "updatedAt": "2026-10-03T10:32:10.746098+00:00"
+  "owners": [
+    {
+      "id": "1281895040322633799",
+      "username": "ben_js512",
+      "displayName": "[\u03c7\ud835\udcaf] \u0432\ud835\udfe5\u03b7",
+      "avatar": "https://cdn.discordapp.com/avatars/1281895040322633799/f785dfa8ab1471870955bf0a65687e96.png?size=1024",
+      "status": "dnd",
+      "activity": "Keine Aktivit\u00e4t",
+      "role": "Server Owner"
+    }
+  ],
+  "updatedAt": "2026-10-03T10:34:10.093091+00:00"
 }
