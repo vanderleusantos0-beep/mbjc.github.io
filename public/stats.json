@@ -1,7 +1,7 @@
 {
   "members": 24,
   "total_members": 27,
-  "online": 5,
+  "online": 6,
   "bots": 3,
   "status": "online",
   "owners": [
@@ -19,10 +19,10 @@
       "username": "ben_js512",
       "displayName": "[\u03c7\ud835\udcaf] \u0432\ud835\udfe5\u03b7",
       "avatar": "https://cdn.discordapp.com/avatars/1281895040322633799/f785dfa8ab1471870955bf0a65687e96.png?size=1024",
-      "status": "offline",
+      "status": "dnd",
       "activity": "Keine Aktivit\u00e4t",
       "role": "Server Owner"
     }
   ],
-  "updatedAt": "2026-10-03T13:19:30.249844+00:00"
+  "updatedAt": "2026-10-03T13:22:30.243855+00:00"
 }
