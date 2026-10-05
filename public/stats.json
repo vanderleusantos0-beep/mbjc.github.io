@@ -1,7 +1,7 @@
 {
   "members": 25,
   "total_members": 28,
-  "online": 3,
+  "online": 4,
   "bots": 3,
   "status": "online",
   "owners": [
@@ -24,5 +24,5 @@
       "role": "Server Owner"
     }
   ],
-  "updatedAt": "2026-10-05T15:13:38.243865+00:00"
+  "updatedAt": "2026-10-05T15:16:38.217334+00:00"
 }
