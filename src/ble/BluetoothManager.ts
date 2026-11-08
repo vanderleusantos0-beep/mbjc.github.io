@@ -72,7 +72,8 @@ export function bleSupport(): {
   const webBluetooth =
     typeof navigator !== 'undefined' &&
     'bluetooth' in navigator &&
-    !!navigator.bluetooth;
+    !!navigator.bluetooth &&
+    typeof navigator.bluetooth.requestDevice === 'function';
 
   const secure =
     typeof window !== 'undefined' &&
@@ -819,90 +820,31 @@ class BluetoothManager {
    * Fehlerdiagnose.
    */
   private fail(error: unknown) {
-
     const details = getErrorMessage(error);
-
     const name = details.name;
-
     const message = details.message;
 
-
-    console.error(
-      '[Scooter OS] Bluetooth-Fehler:',
-      error,
-    );
-
-
-    console.error('Fehlername:', name);
-
-    console.error('Fehlermeldung:', message);
-
+    console.error('[Scooter OS] Bluetooth-Fehler:', error);
+    console.error('[Scooter OS] Fehlername:', name);
+    console.error('[Scooter OS] Fehlermeldung:', message);
 
     let code: BleErrorCode = 'unknown';
 
-
-    if (
-      name === 'NotFoundError' ||
-      name === 'AbortError'
-    ) {
-
+    if (name === 'NotFoundError' || name === 'AbortError') {
       code = 'cancelled';
-
-    } else if (
-
-      name === 'SecurityError' ||
-      name === 'NotAllowedError'
-
-    ) {
-
+    } else if (name === 'SecurityError' || name === 'NotAllowedError') {
       code = 'denied';
-
-    } else if (
-
-      name === 'NetworkError' ||
-      name === 'InvalidStateError'
-
-    ) {
-
+    } else if (name === 'NetworkError' || name === 'InvalidStateError') {
       code = 'gatt';
-
-    } else if (
-
-      name === 'NotSupportedError'
-
-    ) {
-
+    } else if (name === 'NotSupportedError') {
       code = 'unsupported';
-
     }
 
-
-    if (code === 'cancelled') {
-
-      this.setLink({
-
-        state: 'disconnected',
-
-        error: code,
-
-        errorDetail:
-          'Bluetooth-Auswahl wurde abgebrochen.',
-
-      });
-
-      return;
-    }
-
-
+    // Den tatsächlichen Browserfehler auch bei einem Abbruch anzeigen.
     this.setLink({
-
-      state: 'error',
-
+      state: code === 'cancelled' ? 'disconnected' : 'error',
       error: code,
-
-      errorDetail:
-        `${name}: ${message}`,
-
+      errorDetail: `${name}: ${message}`,
     });
   }
 
