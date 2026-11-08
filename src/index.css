@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root,
+:root[data-theme='dark'] {
+  --bg: 5 8 16; --panel: 12 20 36; --ink: 226 240 255; --mute: 125 145 175;
+  --cy: 34 211 238; --tq: 45 212 191; --gn: 74 222 128; --am: 251 191 36; --rd: 248 113 113;
+}
+:root[data-theme='light'] {
+  --bg: 228 236 246; --panel: 255 255 255; --ink: 12 22 40; --mute: 90 105 130;
+  --cy: 8 145 178; --tq: 13 148 136; --gn: 22 163 74; --am: 217 119 6; --rd: 220 38 38;
+}
+
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: rgb(var(--ink));
+  background:
+    radial-gradient(ellipse at 15% 0%, rgb(var(--cy) / 0.14), transparent 50%),
+    radial-gradient(ellipse at 95% 100%, rgb(var(--tq) / 0.10), transparent 45%),
+    rgb(var(--bg));
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+@layer components {
+  .panel {
+    @apply rounded-3xl border border-cy/20 bg-panel/60 backdrop-blur-md;
+    box-shadow: 0 0 32px -12px rgb(var(--cy) / 0.45), inset 0 1px 0 rgb(var(--ink) / 0.05);
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl border border-cy/40 bg-cy/10 px-4 py-3 font-semibold text-cy transition hover:bg-cy/20 active:scale-95 disabled:pointer-events-none disabled:opacity-40;
+  }
+  .btn-primary {
+    @apply rounded-2xl bg-cy px-6 py-4 text-base font-bold tracking-wider text-bg transition active:scale-95;
+    box-shadow: 0 0 28px rgb(var(--cy) / 0.55);
+  }
+  .label { @apply text-[11px] font-semibold uppercase tracking-[0.18em] text-mute; }
+}
+
+/* Leaflet */
+.dark-map .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.95) saturate(0.55); }
+.leaflet-container { background: rgb(var(--bg)); font-family: inherit; }
+.me-marker { position: relative; width: 44px; height: 44px; }
+.me-marker .pulse { position: absolute; inset: 4px; border-radius: 9999px; background: rgb(34 211 238 / 0.25); animation: ping 1.8s ease-out infinite; }
+.me-marker .arrow { position: absolute; inset: 0; transition: transform 0.4s ease; filter: drop-shadow(0 0 6px rgb(34 211 238)); }
+.pin { width: 30px; height: 30px; border-radius: 9999px; display: grid; place-items: center; font-weight: 800; font-size: 13px; color: #04121a; border: 2px solid #fff; box-shadow: 0 0 14px currentColor; }
+@keyframes ping { 0% { transform: scale(0.6); opacity: 0.9; } 100% { transform: scale(1.5); opacity: 0; } }
